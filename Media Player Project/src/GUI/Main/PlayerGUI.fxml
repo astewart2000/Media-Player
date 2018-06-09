@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="810.0" prefWidth="1353.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Main.PlayerGUIController">
+   <children>
+      <BorderPane layoutX="-1.0" layoutY="-1.0" onKeyPressed="#anchorPaneKeyEvent" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <Pane prefHeight="75.0" prefWidth="1353.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <Pane layoutX="173.0" layoutY="-1.0" prefHeight="76.0" prefWidth="169.0" style="-fx-background-color: tomato;">
+                     <children>
+                        <Label layoutX="33.0" layoutY="22.0" text="M E D I A" textFill="WHITE">
+                           <font>
+                              <Font name="MS PGothic" size="25.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+                  <Label layoutX="342.0" layoutY="11.0" prefHeight="53.0" prefWidth="245.0" text="  P L A Y E R">
+                     <font>
+                        <Font name="MS PGothic" size="25.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER" layoutX="-1.0" layoutY="-4.0" prefHeight="81.0" prefWidth="174.0" spacing="40.0">
+                     <children>
+                        <ImageView fx:id="closeDir" fitHeight="40.0" fitWidth="40.0" onMouseClicked="#imageViewClickEvent">
+                           <image>
+                              <Image url="@../../Resources/Images/left-arrow.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="openDir" fitHeight="40.0" fitWidth="40.0" layoutX="65.0" layoutY="19.0" onMouseClicked="#imageViewClickEvent" rotate="180.0">
+                           <image>
+                              <Image url="@../../Resources/Images/left-arrow.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+            </Pane>
+         </top>
+         <left>
+            <Pane prefHeight="735.0" prefWidth="171.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="TOP_CENTER" layoutY="14.0" prefHeight="638.0" prefWidth="172.0" spacing="30.0" style="-fx-background-color: white;">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#mediaButtonEvent" prefHeight="54.0" prefWidth="125.0" style="-fx-background-color: tomato;" text="Music" textFill="WHITE">
+                           <font>
+                              <Font size="17.0" />
+                           </font></Button>
+                        <Button layoutX="30.0" layoutY="10.0" mnemonicParsing="false" onAction="#mediaButtonEvent" prefHeight="54.0" prefWidth="125.0" style="-fx-background-color: tomato;" text="Video" textFill="WHITE">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Button>
+                        <Button layoutX="41.0" layoutY="178.0" mnemonicParsing="false" onAction="#mediaButtonEvent" prefHeight="54.0" prefWidth="125.0" style="-fx-background-color: tomato;" text="Settings" textFill="WHITE">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Button>
+                        <Button layoutX="34.0" layoutY="94.0" mnemonicParsing="false" onAction="#mediaButtonEvent" prefHeight="54.0" prefWidth="125.0" style="-fx-background-color: tomato;" text="Refresh" textFill="WHITE">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+            </Pane>
+         </left>
+         <center>
+            <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox fx:id="settings" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label style="-fx-background-color: white;" text="Settings">
+                           <font>
+                              <Font name="Sylfaen" size="25.0" />
+                           </font>
+                        </Label>
+                        <HBox prefHeight="43.0" prefWidth="1183.0" style="-fx-background-color: white;">
+                           <children>
+                              <Label prefHeight="43.0" prefWidth="165.0" text="Root Directories:">
+                                 <font>
+                                    <Font size="21.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <VBox prefHeight="107.0" prefWidth="1183.0" style="-fx-background-color: white;">
+                           <children>
+                              <HBox prefHeight="31.0" prefWidth="1183.0" spacing="10.0">
+                                 <children>
+                                    <Label prefHeight="27.0" prefWidth="57.0" text="Music:">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="musicRoot" editable="false" prefHeight="25.0" prefWidth="600.0" />
+                                    <Button fx:id="musicBrowse" mnemonicParsing="false" onAction="#browseButtonEvent" text="Browse" />
+                                 </children>
+                              </HBox>
+                              <HBox layoutX="10.0" layoutY="10.0" prefHeight="31.0" prefWidth="1183.0" spacing="10.0">
+                                 <children>
+                                    <Label prefHeight="27.0" prefWidth="57.0" text="Video:">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="videoRoot" editable="false" prefHeight="25.0" prefWidth="600.0" />
+                                    <Button fx:id="videoBrowse" mnemonicParsing="false" onAction="#browseButtonEvent" text="Browse" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="43.0" prefWidth="1183.0" style="-fx-background-color: white;">
+                                 <children>
+                                    <Label prefHeight="43.0" prefWidth="165.0" text="Help/Info:">
+                                       <font>
+                                          <Font size="21.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <HBox layoutX="10.0" layoutY="191.0" prefHeight="252.0" prefWidth="1182.0" style="-fx-background-color: white;">
+                           <children>
+                              <TextArea editable="false" prefHeight="297.0" prefWidth="753.0" text="FAQ:&#10;Q: How do I play a new song?&#10;A: Select a song then double click or press enter.&#10;Q: How can I contact you for suggestions or praise?&#10;A: aidanstewart2000@gmail.com.&#10;Q: What are playable file types?&#10;A: AIFF, FXM, FVL, HLS, MP3, MP4, WAV.&#10;Q: How can I refresh file list if a file is added or removed?&#10;A: Click the refresh button.">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </TextArea>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="listViewContainer" prefHeight="680.0" prefWidth="1237.0" visible="false">
+                     <children>
+                        <TextField fx:id="directoryDisplay" editable="false" />
+                        <ListView fx:id="listView" editable="true" fixedCellSize="0.0" onKeyPressed="#anchorPaneKeyEvent" onMouseClicked="#listViewMouseEvent" prefHeight="655.0" prefWidth="1181.0" style="-fx-background-insets: 0;" />
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+         </center>
+         <bottom>
+            <VBox alignment="CENTER" fillWidth="false" prefHeight="55.0" prefWidth="1353.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="4.0" prefWidth="1353.0">
+                     <children>
+                        <Label fx:id="songDuration" />
+                        <Slider fx:id="slider" onMouseDragged="#sliderChangeEvent" onMousePressed="#sliderChangeEvent" onMouseReleased="#sliderChangeEvent" prefHeight="17.0" prefWidth="1032.0" style="-fx-background-color: white;" />
+                        <Label fx:id="songEnd" layoutX="166.0" layoutY="10.0" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_CENTER" prefHeight="38.0" prefWidth="1417.0" spacing="50.0" style="-fx-background-color: white;">
+                     <children>
+                        <Pane prefHeight="37.0" prefWidth="48.0">
+                           <children>
+                              <ImageView fx:id="loop" fitHeight="35.0" fitWidth="35.0" layoutX="18.0" layoutY="1.0" onMouseClicked="#imageViewClickEvent">
+                                 <image>
+                                    <Image url="@../../Resources/Images/exchange.png" />
+                                 </image>
+                              </ImageView>
+                              <CheckBox fx:id="loopingCBox" disable="true" layoutY="14.0" mnemonicParsing="false" style="-fx-opacity: 1;" />
+                           </children>
+                        </Pane>
+                        <ImageView fx:id="rewind" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent" rotate="180.0">
+                           <image>
+                              <Image url="@../../Resources/Images/button-advance-next-song.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="back" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent" rotate="-180.0">
+                           <image>
+                              <Image url="@../../Resources/Images/arrow.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="play" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent">
+                           <image>
+                              <Image url="@../../Resources/Images/play.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="skip" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent">
+                           <image>
+                              <Image url="@../../Resources/Images/arrow.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="fullscreen" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent">
+                           <image>
+                              <Image url="@../../Resources/Images/fullscreen.png" />
+                           </image>
+                        </ImageView>
+                        <Pane layoutX="372.0" layoutY="10.0" prefHeight="35.0" prefWidth="48.0">
+                           <children>
+                              <ImageView fx:id="randomize" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent">
+                                 <image>
+                                    <Image url="@../../Resources/Images/shuffle.png" />
+                                 </image>
+                              </ImageView>
+                              <CheckBox fx:id="randomizeCBox" disable="true" layoutX="38.0" layoutY="15.0" mnemonicParsing="false" style="-fx-opacity: 1;" />
+                           </children>
+                        </Pane>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </bottom>
+      </BorderPane>
+      <StackPane fx:id="mediaViewContainer" layoutX="-3.0" prefHeight="757.0" prefWidth="1353.0" style="-fx-background-color: white;" visible="false" AnchorPane.bottomAnchor="53.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ImageView fitHeight="552.0" fitWidth="613.0">
+               <image>
+                  <Image url="@../../Resources/Images/error-icon-4.png" />
+               </image>
+            </ImageView>
+            <MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" preserveRatio="false" />
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>
