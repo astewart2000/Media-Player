@@ -251,6 +251,7 @@ public class PlayerGUIController implements Initializable {
     private void openNewDirectory() {
         if (isSelectedDirectory()) {
             player.openDirectory(selectedListViewIndex(), buttonPressed);
+            refreshShuffledIndexs();
             refreshDisplay(buttonPressed);
         }
     }
