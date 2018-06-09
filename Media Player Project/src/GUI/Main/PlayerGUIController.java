@@ -68,10 +68,10 @@ public class PlayerGUIController implements Initializable {
         setTextFieldToArray();
         setRootFields();
         refreshPlayer();
+        refreshShuffledIndexs();
+        refreshDisplay(0);
         mediaView.fitHeightProperty().bind(mediaViewContainer.heightProperty());
         mediaView.fitWidthProperty().bind(mediaViewContainer.widthProperty());
-        directoryDisplay.setText("No media selected.");
-        refreshDisplay(0);
     }
 
     private void setTextFieldToArray() {
@@ -169,10 +169,12 @@ public class PlayerGUIController implements Initializable {
             case "openDir":
                 player.openDirectory(0, buttonPressed);
                 refreshDisplay(buttonPressed);
+                refreshShuffledIndexs();
                 break;
             case "closeDir":
                 player.closeDirectory(buttonPressed);
                 refreshDisplay(buttonPressed);
+                refreshShuffledIndexs();
                 break;
             case "rewind":
                 player.restartMedia();
@@ -218,12 +220,11 @@ public class PlayerGUIController implements Initializable {
                 listView.getItems().add((file.isFile() ? "" : "Folder: ") + file.getName());
             listViewContainer.setVisible(true);
             directoryDisplay.setText(String.valueOf(player.getCurrentDirectories()[buttonPressed]));
-            refreshShuffleIndex();
         } else
             listViewContainer.setVisible(false);
     }
 
-    private void refreshShuffleIndex() {
+    private void refreshShuffledIndexs() {
         int length = player.getFiles()[buttonPressed].length;
         int[] randomIndex = ThreadLocalRandom.current().ints(0, length).distinct().limit(length).toArray();
         shuffledIndexs.get(buttonPressed).clear();
@@ -347,7 +348,7 @@ public class PlayerGUIController implements Initializable {
     }
 
     private void setSelectedListViewIndex(int index) {
-         listView.getSelectionModel().select(index);
+        listView.getSelectionModel().select(index);
     }
 
     private boolean isSelectedFile() {
