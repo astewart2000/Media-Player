@@ -105,13 +105,6 @@ public class PlayerGUIController implements Initializable {
         }
     }
 
-    private void refreshPlayer() {
-        File[] directories = new File[2];
-        for (int i = 0; i < directories.length; i++)
-            directories[i] = new File(rootTextFields[i].getText());
-        player = new Player(directories);
-    }
-
     @FXML
     private void listViewMouseEvent(MouseEvent e) {
         if (e.getClickCount() == 2) {
@@ -211,6 +204,13 @@ public class PlayerGUIController implements Initializable {
         player.updateMediaValue(slider);
     }
 
+    private void refreshPlayer() {
+        File[] directories = new File[2];
+        for (int i = 0; i < directories.length; i++)
+            directories[i] = new File(rootTextFields[i].getText());
+        player = new Player(directories);
+    }
+
     private void refreshDisplay(int buttonPressed) {
         if (listView != null)
             listView.getItems().clear();
@@ -223,6 +223,7 @@ public class PlayerGUIController implements Initializable {
         } else
             listViewContainer.setVisible(false);
     }
+
 
     private void refreshShuffledIndexs() {
         int length = player.getFiles()[buttonPressed].length;
