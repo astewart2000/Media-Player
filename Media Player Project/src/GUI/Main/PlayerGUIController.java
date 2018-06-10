@@ -216,9 +216,6 @@ public class PlayerGUIController implements Initializable {
             File[] files = player.getFiles()[buttonPressed];
             for (File file : files) {
                 listView.getItems().add((file.isFile() ? "" : "Folder: ") + file.getName());
-                if (!file.isAbsolute()){
-                    System.out.println("file: " );
-                }
             }
             listViewContainer.setVisible(true);
             directoryDisplay.setText(String.valueOf(player.getCurrentDirectories()[buttonPressed]));
