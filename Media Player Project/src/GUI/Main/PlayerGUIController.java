@@ -55,21 +55,18 @@ public class PlayerGUIController implements Initializable {
     private StackPane mediaViewContainer;
     private final String[] saveFileNames = {"Music", "Videos"};
     private final TextField[] rootTextFields = new TextField[2];
-    private List<List<Integer>> shuffledIndexs = new ArrayList<>(2);
+    private List<List<Integer>> shuffledIndices = new ArrayList<>(2);
     private int buttonPressed = 0;
-    private int indexInShuffledIndex;
+    private int shuffledIndicesIndex;
     private boolean isChooserOpen;
     private Player player;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         for (int i = 0; i < 2; i++)
-            shuffledIndexs.add(new ArrayList<>());
+            shuffledIndices.add(new ArrayList<>());
         setTextFieldToArray();
         setRootFields();
-        refreshPlayer();
-        refreshShuffledIndexs();
-        refreshDisplay(0);
         mediaView.fitHeightProperty().bind(mediaViewContainer.heightProperty());
         mediaView.fitWidthProperty().bind(mediaViewContainer.widthProperty());
     }
@@ -94,7 +91,7 @@ public class PlayerGUIController implements Initializable {
             }
         }
         refreshPlayer();
-        refreshDisplay(buttonPressed);
+        refreshDisplay(0);
     }
 
     private void saveToFile(File file, String text) {
@@ -126,6 +123,7 @@ public class PlayerGUIController implements Initializable {
 
     @FXML
     private void mediaButtonEvent(ActionEvent e) {
+        int prevButton = buttonPressed;
         String buttonText = ((Button) e.getSource()).getText();
         switch (buttonText) {
             case "Music":
@@ -143,7 +141,8 @@ public class PlayerGUIController implements Initializable {
                 buttonPressed = 2;
                 break;
         }
-        refreshDisplay(buttonPressed);
+        if (prevButton != buttonPressed)
+            refreshDisplay(buttonPressed);
     }
 
     @FXML
@@ -162,12 +161,10 @@ public class PlayerGUIController implements Initializable {
             case "openDir":
                 player.openDirectory(0, buttonPressed);
                 refreshDisplay(buttonPressed);
-                refreshShuffledIndexs();
                 break;
             case "closeDir":
                 player.closeDirectory(buttonPressed);
                 refreshDisplay(buttonPressed);
-                refreshShuffledIndexs();
                 break;
             case "rewind":
                 player.restartMedia();
@@ -209,6 +206,7 @@ public class PlayerGUIController implements Initializable {
         for (int i = 0; i < directories.length; i++)
             directories[i] = new File(rootTextFields[i].getText());
         player = new Player(directories);
+        refreshDisplay(buttonPressed);
     }
 
     private void refreshDisplay(int buttonPressed) {
@@ -216,23 +214,29 @@ public class PlayerGUIController implements Initializable {
             listView.getItems().clear();
         if (buttonPressed != 2) {
             File[] files = player.getFiles()[buttonPressed];
-            for (File file : files)
+            for (File file : files) {
                 listView.getItems().add((file.isFile() ? "" : "Folder: ") + file.getName());
+                if (!file.isAbsolute()){
+                    System.out.println("file: " );
+                }
+            }
             listViewContainer.setVisible(true);
             directoryDisplay.setText(String.valueOf(player.getCurrentDirectories()[buttonPressed]));
+            refreshShuffledIndices();
         } else
             listViewContainer.setVisible(false);
     }
 
 
-    private void refreshShuffledIndexs() {
+    private void refreshShuffledIndices() {
         int length = player.getFiles()[buttonPressed].length;
         int[] randomIndex = ThreadLocalRandom.current().ints(0, length).distinct().limit(length).toArray();
-        shuffledIndexs.get(buttonPressed).clear();
+        shuffledIndices.get(buttonPressed).clear();
         for (int i = 0; i < length; i++)
-            shuffledIndexs.get(buttonPressed).add(randomIndex[i]);
-        indexInShuffledIndex = 0;
+            shuffledIndices.get(buttonPressed).add(randomIndex[i]);
+        shuffledIndicesIndex = 0;
     }
+
 
     private void playNewMedia() {
         if (isSelectedFile()) {
@@ -252,7 +256,6 @@ public class PlayerGUIController implements Initializable {
     private void openNewDirectory() {
         if (isSelectedDirectory()) {
             player.openDirectory(selectedListViewIndex(), buttonPressed);
-            refreshShuffledIndexs();
             refreshDisplay(buttonPressed);
         }
     }
@@ -297,14 +300,14 @@ public class PlayerGUIController implements Initializable {
     }
 
     private void skipOrBackShuffle(boolean skip) {
-        indexInShuffledIndex += skip ? +1 : -1;
+        shuffledIndicesIndex += skip ? +1 : -1;
         try {
-            int randomIndex = shuffledIndexs.get(buttonPressed).get(indexInShuffledIndex);
+            int randomIndex = shuffledIndices.get(buttonPressed).get(shuffledIndicesIndex);
             setSelectedListViewIndex(randomIndex);
             if (player.isPlaying())
                 playNewMedia();
         } catch (IndexOutOfBoundsException ex) {
-            indexInShuffledIndex += !skip ? +1 : -1;
+            shuffledIndicesIndex += !skip ? +1 : -1;
         }
     }
 
