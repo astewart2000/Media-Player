@@ -285,8 +285,7 @@ public class PlayerGUIController implements Initializable {
     }
 
     private void songDuration() {
-        MediaPlayer mediaPlayer = player.getPlayer();
-        new Thread(() -> mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) ->
+        MediaPlayer mediaPlayer = player.getPlayer();mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) ->
         {
             Duration duration = mediaPlayer.getTotalDuration();
             slider.setMax(duration.toSeconds());
@@ -299,7 +298,7 @@ public class PlayerGUIController implements Initializable {
                 else
                     skipOrBack(true);
             });
-        })).run();
+        });
     }
 
     private String createDurationString(int seconds) {
