@@ -8,8 +8,8 @@ import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 
 /**
  * @Author Aidan Stewart
@@ -17,34 +17,38 @@ import java.util.List;
  * Copyright (c)
  * All rights reserved.
  */
+
 public class Player {
     private MediaPlayer player;
     private File[][] files = new File[2][];
-    private File[] currentDirectories = new File[2];
-    private List<List<File>> addedDirectories = new ArrayList<>(2);
+    private Path[] currentDirectories = new Path[2];
+    private Path[] rootDirectories = new Path[2];
+    private List<List<Path>> addedDirectories = new ArrayList<>(2);
     private int directoryIndex;
     private boolean isPlaying;
 
-    public Player(File[] rootDirectories) {
+
+    public Player(Path rootDirectories[]) {
         for (int i = 0; i < rootDirectories.length; i++) {
+            this.rootDirectories[i] = rootDirectories[i];
             currentDirectories[i] = rootDirectories[i];
-            files[i] = currentDirectories[i].listFiles();
             addedDirectories.add(new ArrayList<>());
-            addedDirectories.get(i).clear();
         }
-        directoryIndex = 0;
+    }
+
+    public boolean doesContain(int buttonPressed, int selectedIndex){
+        currentDirectories[buttonPressed] = files[buttonPressed][selectedIndex].toPath();
+        return addedDirectories.get(buttonPressed).contains(currentDirectories[buttonPressed]);
     }
 
     public void openDirectory(int selectedIndex, int buttonPressed) {
         try {
             if (files[buttonPressed][selectedIndex].isDirectory()) {
-                File directorySelected = files[buttonPressed][selectedIndex];
                 if (directoryIndex >= addedDirectories.get(buttonPressed).size())
-                    addedDirectories.get(buttonPressed).add(directorySelected);
+                    addedDirectories.get(buttonPressed).add(currentDirectories[buttonPressed]);
                 else
-                    addedDirectories.get(buttonPressed).set(directoryIndex, directorySelected);
+                    addedDirectories.get(buttonPressed).set(directoryIndex, currentDirectories[buttonPressed]);
             }
-            files[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex).listFiles();
             currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex);
             directoryIndex++;
         } catch (IndexOutOfBoundsException ex){
@@ -55,12 +59,20 @@ public class Player {
     public void closeDirectory(int buttonPressed) {
         String prev = currentDirectories[buttonPressed].toString();
         if (directoryIndex != 0) {
-            prev = prev.substring(0, prev.indexOf(currentDirectories[buttonPressed].getName()));
-            currentDirectories[buttonPressed] = new File(prev.substring(0, prev.lastIndexOf(File.separator)));
-            files[buttonPressed] = currentDirectories[buttonPressed].listFiles();
+            prev = prev.substring(0, prev.indexOf(currentDirectories[buttonPressed].toFile().getName()));
+            currentDirectories[buttonPressed] = new File(prev.substring(0, prev.lastIndexOf(File.separator))).toPath();
             directoryIndex--;
         } else
             displayMessage(Alert.AlertType.ERROR,"Directory does not exist!");
+    }
+
+    private void displayMessage(Alert.AlertType type, String errorMsg){
+        Alert alert = new Alert(type, errorMsg, ButtonType.CANCEL);
+        alert.show();
+    }
+
+    public void refreshFiles(int buttonPressed){
+        files[buttonPressed] = currentDirectories[buttonPressed].toFile().listFiles();
     }
 
     public void playNewMedia(int buttonPressed, int selectedIndex) {
@@ -76,10 +88,6 @@ public class Player {
         }
     }
 
-    public void displayMessage(Alert.AlertType type, String errorMsg){
-        Alert alert = new Alert(type, errorMsg, ButtonType.CANCEL);
-        alert.show();
-    }
 
     public void playOrPauseMedia() {
         if (isPlaying)
@@ -118,7 +126,12 @@ public class Player {
         return files;
     }
 
-    public File[] getCurrentDirectories() {
+    public Path[] getCurrentDirectories() {
         return currentDirectories;
     }
+
+    public List<List<Path>> getAddedDirectories() {
+        return addedDirectories;
+    }
+
 }

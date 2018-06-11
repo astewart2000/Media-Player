@@ -2,6 +2,7 @@ package GUI.Main;
 
 import MainClass.Main;
 import MediaPlayer.Player;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,10 +21,8 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.nio.file.*;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -56,17 +55,17 @@ public class PlayerGUIController implements Initializable {
     private final String[] saveFileNames = {"Music", "Videos"};
     private final TextField[] rootTextFields = new TextField[2];
     private List<List<Integer>> shuffledIndices = new ArrayList<>(2);
+    private Player player;
     private int buttonPressed = 0;
     private int shuffledIndicesIndex;
     private boolean isChooserOpen;
-    private Player player;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         for (int i = 0; i < 2; i++)
             shuffledIndices.add(new ArrayList<>());
         setTextFieldToArray();
-        setRootFields();
+        setDefaults();
         mediaView.fitHeightProperty().bind(mediaViewContainer.heightProperty());
         mediaView.fitWidthProperty().bind(mediaViewContainer.widthProperty());
     }
@@ -76,7 +75,7 @@ public class PlayerGUIController implements Initializable {
         rootTextFields[1] = videoRoot;
     }
 
-    private void setRootFields() {
+    private void setDefaults() {
         String separator = File.separator;
         for (int i = 0; i < saveFileNames.length; i++) {
             File file = new File(saveFileNames[i] + ".txt");
@@ -90,16 +89,17 @@ public class PlayerGUIController implements Initializable {
                 rootTextFields[i].setText(dir.getAbsolutePath());
             }
         }
-        refreshPlayer();
-        refreshDisplay(0);
+        setPlayer();
+        refreshDisplay();
     }
 
-    private void saveToFile(File file, String text) {
-        try {
-            Files.write(file.toPath(), text.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void setPlayer() {
+        Path[] directories = new Path[2];
+        for (int i = 0; i < directories.length; i++) {
+            directories[i] = new File(rootTextFields[i].getText()).toPath();
+            listenForDirectoryChanges(new File(rootTextFields[i].getText()).toPath());
         }
+        player = new Player(directories);
     }
 
     @FXML
@@ -132,17 +132,13 @@ public class PlayerGUIController implements Initializable {
             case "Video":
                 buttonPressed = 1;
                 break;
-            case "Refresh":
-                player.stopMedia();
-                refreshPlayer();
-                player.displayMessage(Alert.AlertType.CONFIRMATION, "File list refreshed.");
-                break;
             case "Settings":
                 buttonPressed = 2;
                 break;
         }
-        if (prevButton != buttonPressed)
-            refreshDisplay(buttonPressed);
+        if (prevButton != buttonPressed) {
+            refreshDisplay();
+        }
     }
 
     @FXML
@@ -160,11 +156,11 @@ public class PlayerGUIController implements Initializable {
                 break;
             case "openDir":
                 player.openDirectory(0, buttonPressed);
-                refreshDisplay(buttonPressed);
+                refreshDisplay();
                 break;
             case "closeDir":
-                player.closeDirectory(buttonPressed);
-                refreshDisplay(buttonPressed);
+                player.closeDirectory(0);
+                refreshDisplay();
                 break;
             case "rewind":
                 player.restartMedia();
@@ -201,22 +197,37 @@ public class PlayerGUIController implements Initializable {
         player.updateMediaValue(slider);
     }
 
-    private void refreshPlayer() {
-        File[] directories = new File[2];
-        for (int i = 0; i < directories.length; i++)
-            directories[i] = new File(rootTextFields[i].getText());
-        player = new Player(directories);
-        refreshDisplay(buttonPressed);
+    private void listenForDirectoryChanges(Path path) {
+        new Thread(() -> {
+            try (WatchService service = FileSystems.getDefault().newWatchService()) {
+                Map<WatchKey, Path> keyPathMap = new HashMap<>();
+                keyPathMap.put(path.register(service,
+                        StandardWatchEventKinds.ENTRY_DELETE,
+                        StandardWatchEventKinds.ENTRY_CREATE)
+                        ,path);
+                WatchKey watchKey;
+                do {
+                    watchKey = service.take();
+                    for (WatchEvent<?> ignored : watchKey.pollEvents()) {
+                        player.refreshFiles(buttonPressed);
+                        System.out.println("Test Completed");
+                        Platform.runLater(this::refreshDisplay);
+                    }
+                } while (watchKey.reset());
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    private void refreshDisplay(int buttonPressed) {
+    private void refreshDisplay() {
         if (listView != null)
             listView.getItems().clear();
         if (buttonPressed != 2) {
+            player.refreshFiles(buttonPressed);
             File[] files = player.getFiles()[buttonPressed];
-            for (File file : files) {
+            for (File file : files)
                 listView.getItems().add((file.isFile() ? "" : "Folder: ") + file.getName());
-            }
             listViewContainer.setVisible(true);
             directoryDisplay.setText(String.valueOf(player.getCurrentDirectories()[buttonPressed]));
             refreshShuffledIndices();
@@ -232,6 +243,15 @@ public class PlayerGUIController implements Initializable {
         for (int i = 0; i < length; i++)
             shuffledIndices.get(buttonPressed).add(randomIndex[i]);
         shuffledIndicesIndex = 0;
+    }
+
+
+    private void saveToFile(File file, String text) {
+        try {
+            Files.write(file.toPath(), text.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -252,8 +272,10 @@ public class PlayerGUIController implements Initializable {
 
     private void openNewDirectory() {
         if (isSelectedDirectory()) {
+            if (!player.doesContain(buttonPressed, selectedListViewIndex()))
+                listenForDirectoryChanges(player.getCurrentDirectories()[buttonPressed]);
             player.openDirectory(selectedListViewIndex(), buttonPressed);
-            refreshDisplay(buttonPressed);
+            refreshDisplay();
         }
     }
 
@@ -339,7 +361,7 @@ public class PlayerGUIController implements Initializable {
                 player.stopMedia();
                 File file = new File(saveFileNames[browseButtonPressed] + ".txt");
                 saveToFile(file, dir.getAbsolutePath());
-                setRootFields();
+                setDefaults();
             }
             isChooserOpen = false;
         }
@@ -361,3 +383,4 @@ public class PlayerGUIController implements Initializable {
         return player.getFiles()[buttonPressed][selectedListViewIndex()].isDirectory();
     }
 }
+

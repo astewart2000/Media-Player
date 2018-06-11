@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.media.*?>
 <?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -62,11 +58,6 @@
                            </font>
                         </Button>
                         <Button layoutX="41.0" layoutY="178.0" mnemonicParsing="false" onAction="#mediaButtonEvent" prefHeight="54.0" prefWidth="125.0" style="-fx-background-color: tomato;" text="Settings" textFill="WHITE">
-                           <font>
-                              <Font size="17.0" />
-                           </font>
-                        </Button>
-                        <Button layoutX="34.0" layoutY="94.0" mnemonicParsing="false" onAction="#mediaButtonEvent" prefHeight="54.0" prefWidth="125.0" style="-fx-background-color: tomato;" text="Refresh" textFill="WHITE">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -130,9 +121,9 @@
                               </HBox>
                            </children>
                         </VBox>
-                        <HBox layoutX="10.0" layoutY="191.0" prefHeight="255.0" prefWidth="1182.0" style="-fx-background-color: white;">
+                        <HBox layoutX="10.0" layoutY="191.0" prefHeight="198.0" prefWidth="1182.0" style="-fx-background-color: white;">
                            <children>
-                              <TextArea editable="false" prefHeight="277.0" prefWidth="753.0" text="FAQ:&#10;Q: How do I play a new song?&#10;A: Select a song then double click or press enter.&#10;Q: How can I contact you for suggestions or praise?&#10;A: aidanstewart2000@gmail.com.&#10;Q: What are playable file types?&#10;A: AIFF, FXM, FVL, HLS, MP3, MP4, WAV.&#10;Q: How can I refresh file list if a file is added or removed?&#10;A: Click the refresh button.">
+                              <TextArea editable="false" prefHeight="208.0" prefWidth="753.0" text="FAQ:&#10;Q: How do I play a new song?&#10;A: Select a song then double click or press enter.&#10;Q: How can I contact you for suggestions or praise?&#10;A: aidanstewart2000@gmail.com.&#10;Q: What are playable file types?&#10;A: AIFF, FXM, FVL, HLS, MP3, MP4, WAV.">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -141,7 +132,7 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox fx:id="listViewContainer" prefHeight="680.0" prefWidth="1237.0" visible="false">
+                  <VBox fx:id="listViewContainer" prefHeight="680.0" prefWidth="1237.0">
                      <children>
                         <TextField fx:id="directoryDisplay" editable="false" />
                         <ListView fx:id="listView" editable="true" fixedCellSize="0.0" onKeyPressed="#anchorPaneKeyEvent" onMouseClicked="#listViewMouseEvent" prefHeight="655.0" prefWidth="1181.0" style="-fx-background-insets: 0;" />
