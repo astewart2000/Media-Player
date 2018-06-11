@@ -66,6 +66,7 @@ public class PlayerGUIController implements Initializable {
             shuffledIndices.add(new ArrayList<>());
         setTextFieldToArray();
         setDefaults();
+        player.refreshFiles(0);
         mediaView.fitHeightProperty().bind(mediaViewContainer.heightProperty());
         mediaView.fitWidthProperty().bind(mediaViewContainer.widthProperty());
     }
@@ -90,6 +91,7 @@ public class PlayerGUIController implements Initializable {
             }
         }
         setPlayer();
+
         refreshDisplay();
     }
 
@@ -155,7 +157,7 @@ public class PlayerGUIController implements Initializable {
                 skipOrBack(false);
                 break;
             case "openDir":
-                player.openDirectory(0, buttonPressed);
+                player.openDirectory(buttonPressed, false);
                 refreshDisplay();
                 break;
             case "closeDir":
@@ -235,7 +237,6 @@ public class PlayerGUIController implements Initializable {
             listViewContainer.setVisible(false);
     }
 
-
     private void refreshShuffledIndices() {
         int length = player.getFiles()[buttonPressed].length;
         int[] randomIndex = ThreadLocalRandom.current().ints(0, length).distinct().limit(length).toArray();
@@ -245,7 +246,6 @@ public class PlayerGUIController implements Initializable {
         shuffledIndicesIndex = 0;
     }
 
-
     private void saveToFile(File file, String text) {
         try {
             Files.write(file.toPath(), text.getBytes());
@@ -253,7 +253,6 @@ public class PlayerGUIController implements Initializable {
             e.printStackTrace();
         }
     }
-
 
     private void playNewMedia() {
         if (isSelectedFile()) {
@@ -272,9 +271,11 @@ public class PlayerGUIController implements Initializable {
 
     private void openNewDirectory() {
         if (isSelectedDirectory()) {
-            if (!player.doesContain(buttonPressed, selectedListViewIndex()))
+            if (!player.doesContain(selectedListViewIndex(), buttonPressed)) {
                 listenForDirectoryChanges(player.getCurrentDirectories()[buttonPressed]);
-            player.openDirectory(selectedListViewIndex(), buttonPressed);
+                System.out.println("hi");
+            }
+            player.openDirectory( buttonPressed, true);
             refreshDisplay();
         }
     }

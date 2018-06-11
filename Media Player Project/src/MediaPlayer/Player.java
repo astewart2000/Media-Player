@@ -22,7 +22,6 @@ public class Player {
     private MediaPlayer player;
     private File[][] files = new File[2][];
     private Path[] currentDirectories = new Path[2];
-    private Path[] rootDirectories = new Path[2];
     private List<List<Path>> addedDirectories = new ArrayList<>(2);
     private int directoryIndex;
     private boolean isPlaying;
@@ -30,25 +29,26 @@ public class Player {
 
     public Player(Path rootDirectories[]) {
         for (int i = 0; i < rootDirectories.length; i++) {
-            this.rootDirectories[i] = rootDirectories[i];
+            rootDirectories[i] = rootDirectories[i];
             currentDirectories[i] = rootDirectories[i];
             addedDirectories.add(new ArrayList<>());
         }
     }
 
-    public boolean doesContain(int buttonPressed, int selectedIndex){
+    public boolean doesContain(int selectedIndex, int buttonPressed){
         currentDirectories[buttonPressed] = files[buttonPressed][selectedIndex].toPath();
         return addedDirectories.get(buttonPressed).contains(currentDirectories[buttonPressed]);
     }
 
-    public void openDirectory(int selectedIndex, int buttonPressed) {
+    public void openDirectory(int buttonPressed, boolean addingDirs) {
         try {
-            if (files[buttonPressed][selectedIndex].isDirectory()) {
+            if (addingDirs) {
                 if (directoryIndex >= addedDirectories.get(buttonPressed).size())
                     addedDirectories.get(buttonPressed).add(currentDirectories[buttonPressed]);
                 else
                     addedDirectories.get(buttonPressed).set(directoryIndex, currentDirectories[buttonPressed]);
             }
+            System.out.println(addedDirectories);
             currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex);
             directoryIndex++;
         } catch (IndexOutOfBoundsException ex){
