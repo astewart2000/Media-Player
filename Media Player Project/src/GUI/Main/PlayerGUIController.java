@@ -91,7 +91,6 @@ public class PlayerGUIController implements Initializable {
             }
         }
         setPlayer();
-
         refreshDisplay();
     }
 
@@ -271,10 +270,8 @@ public class PlayerGUIController implements Initializable {
 
     private void openNewDirectory() {
         if (isSelectedDirectory()) {
-            if (!player.doesContain(selectedListViewIndex(), buttonPressed)) {
+            if (!player.doesContain(selectedListViewIndex(), buttonPressed))
                 listenForDirectoryChanges(player.getCurrentDirectories()[buttonPressed]);
-                System.out.println("hi");
-            }
             player.openDirectory( buttonPressed, true);
             refreshDisplay();
         }

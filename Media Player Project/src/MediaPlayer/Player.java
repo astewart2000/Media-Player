@@ -48,7 +48,6 @@ public class Player {
                 else
                     addedDirectories.get(buttonPressed).set(directoryIndex, currentDirectories[buttonPressed]);
             }
-            System.out.println(addedDirectories);
             currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex);
             directoryIndex++;
         } catch (IndexOutOfBoundsException ex){
