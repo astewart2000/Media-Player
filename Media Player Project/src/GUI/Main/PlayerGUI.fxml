@@ -135,8 +135,8 @@
                   </VBox>
                   <VBox fx:id="listViewContainer" prefHeight="680.0" prefWidth="1237.0">
                      <children>
-                        <TextField fx:id="directoryDisplay" editable="false" prefHeight="25.0" prefWidth="1057.0" />
-                        <ListView fx:id="listView" editable="true" fixedCellSize="0.0" onKeyPressed="#anchorPaneKeyEvent" onMouseClicked="#listViewMouseEvent" prefHeight="655.0" prefWidth="1181.0" style="-fx-background-insets: 0;" />
+                        <TextField fx:id="directoryDisplay" editable="false" prefHeight="25.0" prefWidth="1057.0" VBox.vgrow="ALWAYS" />
+                        <ListView fx:id="listView" editable="true" fixedCellSize="0.0" onKeyPressed="#anchorPaneKeyEvent" onMouseClicked="#listViewMouseEvent" prefHeight="655.0" prefWidth="1181.0" style="-fx-background-insets: 0;" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
                </children>
