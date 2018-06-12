@@ -66,7 +66,6 @@ public class PlayerGUIController implements Initializable {
             shuffledIndices.add(new ArrayList<>());
         setTextFieldToArray();
         setDefaults();
-        player.refreshFiles(0);
         mediaView.fitHeightProperty().bind(mediaViewContainer.heightProperty());
         mediaView.fitWidthProperty().bind(mediaViewContainer.widthProperty());
     }

@@ -17,7 +17,6 @@ import java.util.*;
  * Copyright (c)
  * All rights reserved.
  */
-
 public class Player {
     private MediaPlayer player;
     private File[][] files = new File[2][];
@@ -25,7 +24,6 @@ public class Player {
     private List<List<Path>> addedDirectories = new ArrayList<>(2);
     private int directoryIndex;
     private boolean isPlaying;
-
 
     public Player(Path rootDirectories[]) {
         for (int i = 0; i < rootDirectories.length; i++) {
@@ -40,9 +38,9 @@ public class Player {
         return addedDirectories.get(buttonPressed).contains(currentDirectories[buttonPressed]);
     }
 
-    public void openDirectory(int buttonPressed, boolean addingDirs) {
+    public void openDirectory(int buttonPressed, boolean addingDir) {
         try {
-            if (addingDirs) {
+            if (addingDir) {
                 if (directoryIndex >= addedDirectories.get(buttonPressed).size())
                     addedDirectories.get(buttonPressed).add(currentDirectories[buttonPressed]);
                 else
