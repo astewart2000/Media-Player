@@ -137,9 +137,8 @@ public class PlayerGUIController implements Initializable {
                 default:
                     break;
         }
-        if (prevButton != buttonPressed) {
+        if (prevButton != buttonPressed) 
             refreshDisplay();
-        }
     }
 
     @FXML
