@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.media.*?>
 <?import javafx.scene.text.*?>
@@ -12,7 +13,7 @@
          <top>
             <Pane prefHeight="75.0" prefWidth="1353.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
                <children>
-                  <Pane layoutX="173.0" layoutY="-1.0" prefHeight="76.0" prefWidth="169.0" style="-fx-background-color: tomato;">
+                  <Pane layoutX="171.0" layoutY="-1.0" prefHeight="76.0" prefWidth="171.0" style="-fx-background-color: tomato;">
                      <children>
                         <Label layoutX="33.0" layoutY="22.0" text="M E D I A" textFill="WHITE">
                            <font>
@@ -121,9 +122,9 @@
                               </HBox>
                            </children>
                         </VBox>
-                        <HBox layoutX="10.0" layoutY="191.0" prefHeight="198.0" prefWidth="1182.0" style="-fx-background-color: white;">
+                        <HBox layoutX="10.0" layoutY="191.0" prefHeight="204.0" prefWidth="1182.0" style="-fx-background-color: white;">
                            <children>
-                              <TextArea editable="false" prefHeight="208.0" prefWidth="753.0" text="FAQ:&#10;Q: How do I play a new song?&#10;A: Select a song then double click or press enter.&#10;Q: How can I contact you for suggestions or praise?&#10;A: aidanstewart2000@gmail.com.&#10;Q: What are playable file types?&#10;A: AIFF, FXM, FVL, HLS, MP3, MP4, WAV.">
+                              <TextArea editable="false" prefHeight="200.0" prefWidth="753.0" text="FAQ:&#10;Q: How do I play a new song?&#10;A: Select a song then double click or press enter.&#10;Q: How can I contact you for suggestions or praise?&#10;A: aidanstewart2000@gmail.com.&#10;Q: What are playable file types?&#10;A: AIFF, FXM, FVL, HLS, MP3, MP4, WAV.">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -134,7 +135,7 @@
                   </VBox>
                   <VBox fx:id="listViewContainer" prefHeight="680.0" prefWidth="1237.0">
                      <children>
-                        <TextField fx:id="directoryDisplay" editable="false" />
+                        <TextField fx:id="directoryDisplay" editable="false" prefHeight="25.0" prefWidth="1057.0" />
                         <ListView fx:id="listView" editable="true" fixedCellSize="0.0" onKeyPressed="#anchorPaneKeyEvent" onMouseClicked="#listViewMouseEvent" prefHeight="655.0" prefWidth="1181.0" style="-fx-background-insets: 0;" />
                      </children>
                   </VBox>
