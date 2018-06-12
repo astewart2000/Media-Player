@@ -56,8 +56,7 @@ public class PlayerGUIController implements Initializable {
     private final TextField[] rootTextFields = new TextField[2];
     private List<List<Integer>> shuffledIndices = new ArrayList<>(2);
     private Player player;
-    private int buttonPressed = 0;
-    private int shuffledIndicesIndex;
+    private int shuffledIndicesIndex, buttonPressed = 0;
     private boolean isChooserOpen;
 
     @Override
@@ -135,6 +134,8 @@ public class PlayerGUIController implements Initializable {
             case "Settings":
                 buttonPressed = 2;
                 break;
+                default:
+                    break;
         }
         if (prevButton != buttonPressed) {
             refreshDisplay();
@@ -174,6 +175,8 @@ public class PlayerGUIController implements Initializable {
             case "loop":
                 toggleLooping();
                 break;
+                default:
+                    break;
         }
     }
 
@@ -188,6 +191,8 @@ public class PlayerGUIController implements Initializable {
             case "videoBrowse":
                 browseButtonPressed = 1;
                 break;
+                default:
+                    break;
         }
         openDirectoryChooser(browseButtonPressed);
     }
