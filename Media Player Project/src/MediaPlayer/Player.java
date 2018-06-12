@@ -49,7 +49,7 @@ public class Player {
             currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex);
             directoryIndex++;
         } catch (IndexOutOfBoundsException ex){
-            displayMessage(Alert.AlertType.ERROR,"Directory does not exist!");
+            displayMessage("Directory does not exist!");
         }
     }
 
@@ -60,11 +60,11 @@ public class Player {
             currentDirectories[buttonPressed] = new File(prev.substring(0, prev.lastIndexOf(File.separator))).toPath();
             directoryIndex--;
         } else
-            displayMessage(Alert.AlertType.ERROR,"Directory does not exist!");
+            displayMessage("Directory does not exist!");
     }
 
-    private void displayMessage(Alert.AlertType type, String errorMsg){
-        Alert alert = new Alert(type, errorMsg, ButtonType.CANCEL);
+    private void displayMessage(String errorMsg){
+        Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.CANCEL);
         alert.show();
     }
 
@@ -81,10 +81,9 @@ public class Player {
             player.play();
             isPlaying = true;
         } catch (MediaException ex){
-            displayMessage(Alert.AlertType.ERROR ,"Not a playable file type!");
+            displayMessage("Not a playable file type!");
         }
     }
-
 
     public void playOrPauseMedia() {
         if (isPlaying)
