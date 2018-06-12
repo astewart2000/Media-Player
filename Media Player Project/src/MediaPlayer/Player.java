@@ -125,9 +125,4 @@ public class Player {
     public Path[] getCurrentDirectories() {
         return currentDirectories;
     }
-
-    public List<List<Path>> getAddedDirectories() {
-        return addedDirectories;
-    }
-
 }
