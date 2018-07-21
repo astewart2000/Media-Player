@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.media.*?>
 <?import javafx.scene.text.*?>
@@ -191,12 +190,12 @@
                         </ImageView>
                         <Pane layoutX="372.0" layoutY="10.0" prefHeight="35.0" prefWidth="48.0">
                            <children>
-                              <ImageView fx:id="randomize" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent">
+                              <ImageView fx:id="shuffle" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imageViewClickEvent">
                                  <image>
                                     <Image url="@../../Resources/Images/shuffle.png" />
                                  </image>
                               </ImageView>
-                              <CheckBox fx:id="randomizeCBox" disable="true" layoutX="38.0" layoutY="15.0" mnemonicParsing="false" style="-fx-opacity: 1;" />
+                              <CheckBox fx:id="shuffleCBox" disable="true" layoutX="38.0" layoutY="15.0" mnemonicParsing="false" style="-fx-opacity: 1;" />
                            </children>
                         </Pane>
                      </children>

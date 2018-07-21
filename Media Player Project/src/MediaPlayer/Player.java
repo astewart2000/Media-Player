@@ -38,19 +38,23 @@ public class Player {
         return addedDirectories.get(buttonPressed).contains(currentDirectories[buttonPressed]);
     }
 
-    public void openDirectory(int buttonPressed, boolean addingDir) {
+    public void tryToOpenDirectory(int buttonPressed, boolean addingDir) {
         try {
-            if (addingDir) {
-                if (directoryIndex >= addedDirectories.get(buttonPressed).size())
-                    addedDirectories.get(buttonPressed).add(currentDirectories[buttonPressed]);
-                else
-                    addedDirectories.get(buttonPressed).set(directoryIndex, currentDirectories[buttonPressed]);
-            }
-            currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex);
-            directoryIndex++;
+           openDirectory(buttonPressed, addingDir);
         } catch (IndexOutOfBoundsException ex){
             displayMessage("Directory does not exist!");
         }
+    }
+
+    private void openDirectory(int buttonPressed, boolean addingDir){
+        if (addingDir) {
+            if (directoryIndex >= addedDirectories.get(buttonPressed).size())
+                addedDirectories.get(buttonPressed).add(currentDirectories[buttonPressed]);
+            else
+                addedDirectories.get(buttonPressed).set(directoryIndex, currentDirectories[buttonPressed]);
+        }
+        currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex);
+        directoryIndex++;
     }
 
     public void closeDirectory(int buttonPressed) {
@@ -72,20 +76,26 @@ public class Player {
         files[buttonPressed] = currentDirectories[buttonPressed].toFile().listFiles();
     }
 
-    public void playNewMedia(int buttonPressed, int selectedIndex) {
-        String file = files[buttonPressed][selectedIndex].toURI().toString();
-        stopMedia();
+    public void tryToPlayNewMedia(int buttonPressed, int selectedIndex) {
+        if (player != null)
+            player.stop();
         try {
-            Media media = new Media(file);
-            player = new MediaPlayer(media);
-            player.play();
-            isPlaying = true;
+            playNewMedia(buttonPressed, selectedIndex);
         } catch (MediaException ex){
             displayMessage("Not a playable file type!");
+            isPlaying = false;
         }
     }
 
-    public void playOrPauseMedia() {
+    private void playNewMedia(int buttonPressed, int selectedIndex) {
+        String file = files[buttonPressed][selectedIndex].toURI().toString();
+        Media media = new Media(file);
+        player = new MediaPlayer(media);
+        player.play();
+        isPlaying = true;
+    }
+
+    public void mediaPlayState() {
         if (isPlaying)
             player.pause();
         else
@@ -98,16 +108,6 @@ public class Player {
         player.seek(Duration.seconds(slider.getValue()));
         if (!slider.isValueChanging() && isPlaying)
             player.play();
-    }
-
-    public void stopMedia() {
-        if (player != null)
-            player.stop();
-        isPlaying = false;
-    }
-
-    public void restartMedia() {
-        player.seek(player.getStartTime());
     }
 
     public boolean isPlaying() {

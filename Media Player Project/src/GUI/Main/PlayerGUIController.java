@@ -35,9 +35,9 @@ public class PlayerGUIController implements Initializable {
     @FXML
     private Button musicBrowse, videoBrowse;
     @FXML
-    private ImageView play, skip, back, rewind, fullscreen, loop, randomize, openDir, closeDir;
+    private ImageView play, skip, back, rewind, fullscreen, loop, shuffle, openDir, closeDir;
     @FXML
-    private CheckBox loopingCBox, randomizeCBox;
+    private CheckBox loopingCBox, shuffleCBox;
     @FXML
     private Slider slider;
     @FXML
@@ -56,7 +56,7 @@ public class PlayerGUIController implements Initializable {
     private final TextField[] rootTextFields = new TextField[2];
     private List<List<Integer>> shuffledIndices = new ArrayList<>(2);
     private Player player;
-    private int shuffledIndicesIndex, buttonPressed = 0;
+    private int shuffledIndicesIndex, menuButtonPressed = 0;
     private boolean isChooserOpen;
 
     @Override
@@ -64,7 +64,7 @@ public class PlayerGUIController implements Initializable {
         for (int i = 0; i < 2; i++)
             shuffledIndices.add(new ArrayList<>());
         setTextFieldToArray();
-        setDefaults();
+        tryToSetRootFields();
         mediaView.fitHeightProperty().bind(mediaViewContainer.heightProperty());
         mediaView.fitWidthProperty().bind(mediaViewContainer.widthProperty());
     }
@@ -74,31 +74,34 @@ public class PlayerGUIController implements Initializable {
         rootTextFields[1] = videoRoot;
     }
 
-    private void setDefaults() {
-        String separator = File.separator;
-        for (int i = 0; i < saveFileNames.length; i++) {
+    private void tryToSetRootFields(){
+        for (int i = 0; i < 2; i++) {
             File file = new File(saveFileNames[i] + ".txt");
             try {
                 rootTextFields[i].setText(Files.readAllLines(file.toPath()).get(0));
-            } catch (IOException e) {
-                e.printStackTrace();
-                String home = System.getProperty("user.home");
-                File dir = new File(home + separator + saveFileNames[i]);
-                saveToFile(file, dir.getAbsolutePath());
-                rootTextFields[i].setText(dir.getAbsolutePath());
+            } catch (IOException | NullPointerException ex) {
+                setRootFieldsToDefault(i);
             }
+            setPlayer();
         }
-        setPlayer();
-        refreshDisplay();
+    }
+
+    private void setRootFieldsToDefault(int saveFile) {
+        String home = System.getProperty("user.home");
+        File file = new File(saveFileNames[saveFile] + ".txt");
+        File defaultDir = new File(home + File.separator + saveFileNames[saveFile]);
+        saveToFile(file, defaultDir.getAbsolutePath());
+        rootTextFields[saveFile].setText(defaultDir.getAbsolutePath());
     }
 
     private void setPlayer() {
         Path[] directories = new Path[2];
         for (int i = 0; i < directories.length; i++) {
             directories[i] = new File(rootTextFields[i].getText()).toPath();
-            listenForDirectoryChanges(new File(rootTextFields[i].getText()).toPath());
+            tryToListenForDisplayedDirChanges(new File(rootTextFields[i].getText()).toPath());
         }
         player = new Player(directories);
+        refreshDisplay();
     }
 
     @FXML
@@ -122,22 +125,22 @@ public class PlayerGUIController implements Initializable {
 
     @FXML
     private void mediaButtonEvent(ActionEvent e) {
-        int prevButton = buttonPressed;
+        int prevButton = menuButtonPressed;
         String buttonText = ((Button) e.getSource()).getText();
         switch (buttonText) {
             case "Music":
-                buttonPressed = 0;
+                menuButtonPressed = 0;
                 break;
             case "Video":
-                buttonPressed = 1;
+                menuButtonPressed = 1;
                 break;
             case "Settings":
-                buttonPressed = 2;
+                menuButtonPressed = 2;
                 break;
                 default:
                     break;
         }
-        if (prevButton != buttonPressed) 
+        if (prevButton != menuButtonPressed)
             refreshDisplay();
     }
 
@@ -149,13 +152,13 @@ public class PlayerGUIController implements Initializable {
                 playOrPauseMedia();
                 break;
             case "skip":
-                skipOrBack(true);
+                changeMedia(true);
                 break;
             case "back":
-                skipOrBack(false);
+                changeMedia(false);
                 break;
             case "openDir":
-                player.openDirectory(buttonPressed, false);
+                player.tryToOpenDirectory(menuButtonPressed, false);
                 refreshDisplay();
                 break;
             case "closeDir":
@@ -163,13 +166,13 @@ public class PlayerGUIController implements Initializable {
                 refreshDisplay();
                 break;
             case "rewind":
-                player.restartMedia();
+                player.getPlayer().seek(player.getPlayer().getStartTime());
                 break;
             case "fullscreen":
                 toggleFullscreen();
                 break;
-            case "randomize":
-                toggleRandomizing();
+            case "shuffle":
+                toggleShuffle();
                 break;
             case "loop":
                 toggleLooping();
@@ -201,106 +204,107 @@ public class PlayerGUIController implements Initializable {
         player.updateMediaValue(slider);
     }
 
-    private void listenForDirectoryChanges(Path path) {
+    private void tryToListenForDisplayedDirChanges(Path path) {
         new Thread(() -> {
-            try (WatchService service = FileSystems.getDefault().newWatchService()) {
-                Map<WatchKey, Path> keyPathMap = new HashMap<>();
-                keyPathMap.put(path.register(service,
-                        StandardWatchEventKinds.ENTRY_DELETE,
-                        StandardWatchEventKinds.ENTRY_CREATE)
-                        ,path);
-                WatchKey watchKey;
-                do {
-                    watchKey = service.take();
-                    for (WatchEvent<?> ignored : watchKey.pollEvents()) {
-                        player.refreshFiles(buttonPressed);
-                        System.out.println("Test Completed");
-                        Platform.runLater(this::refreshDisplay);
-                    }
-                } while (watchKey.reset());
+            try {
+                listenForDisplayedDirChanges(path);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
     }
 
+    private void listenForDisplayedDirChanges(Path path) throws IOException, InterruptedException {
+        WatchService service = FileSystems.getDefault().newWatchService();
+        Map<WatchKey, Path> keyPathMap = new HashMap<>();
+        keyPathMap.put(path.register(service,
+                StandardWatchEventKinds.ENTRY_DELETE,
+                StandardWatchEventKinds.ENTRY_CREATE)
+                ,path);
+        WatchKey watchKey;
+        do {
+            watchKey = service.take();
+            for (WatchEvent<?> ignored : watchKey.pollEvents()) {
+                player.refreshFiles(menuButtonPressed);
+                System.out.println("Test Completed");
+                Platform.runLater(this::refreshDisplay);
+            }
+        } while (watchKey.reset());
+    }
+
     private void refreshDisplay() {
         if (listView != null)
             listView.getItems().clear();
-        if (buttonPressed != 2) {
-            player.refreshFiles(buttonPressed);
-            File[] files = player.getFiles()[buttonPressed];
+        if (menuButtonPressed != 2) {
+            player.refreshFiles(menuButtonPressed);
+            File[] files = player.getFiles()[menuButtonPressed];
             for (File file : files)
                 listView.getItems().add((file.isFile() ? "" : "Folder: ") + file.getName());
             listViewContainer.setVisible(true);
-            directoryDisplay.setText(String.valueOf(player.getCurrentDirectories()[buttonPressed]));
+            directoryDisplay.setText(String.valueOf(player.getCurrentDirectories()[menuButtonPressed]));
             refreshShuffledIndices();
         } else
             listViewContainer.setVisible(false);
     }
 
     private void refreshShuffledIndices() {
-        int length = player.getFiles()[buttonPressed].length;
+        int length = player.getFiles()[menuButtonPressed].length;
         int[] randomIndex = ThreadLocalRandom.current().ints(0, length).distinct().limit(length).toArray();
-        shuffledIndices.get(buttonPressed).clear();
+        shuffledIndices.get(menuButtonPressed).clear();
         for (int i = 0; i < length; i++)
-            shuffledIndices.get(buttonPressed).add(randomIndex[i]);
+            shuffledIndices.get(menuButtonPressed).add(randomIndex[i]);
         shuffledIndicesIndex = 0;
-    }
-
-    private void saveToFile(File file, String text) {
-        try {
-            Files.write(file.toPath(), text.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void playNewMedia() {
         if (isSelectedFile()) {
-            player.playNewMedia(buttonPressed, selectedListViewIndex());
+            player.tryToPlayNewMedia(menuButtonPressed, selectedListViewIndex());
             mediaView.setMediaPlayer(player.getPlayer());
             openMediaView();
-            songDuration();
+            determineMediaDuration();
         }
     }
 
     private void playOrPauseMedia() {
-        player.playOrPauseMedia();
-        songDuration();
+        player.mediaPlayState();
+        determineMediaDuration();
         openMediaView();
     }
 
     private void openNewDirectory() {
         if (isSelectedDirectory()) {
-            if (!player.doesContain(selectedListViewIndex(), buttonPressed))
-                listenForDirectoryChanges(player.getCurrentDirectories()[buttonPressed]);
-            player.openDirectory( buttonPressed, true);
+            if (!player.doesContain(selectedListViewIndex(), menuButtonPressed))
+                tryToListenForDisplayedDirChanges(player.getCurrentDirectories()[menuButtonPressed]);
+            player.tryToOpenDirectory(menuButtonPressed, true);
             refreshDisplay();
         }
     }
 
     private void openMediaView() {
-        boolean visibility = buttonPressed == 1 && player.isPlaying();
+        boolean visibility = menuButtonPressed == 1 && player.isPlaying();
         mediaViewContainer.setVisible(visibility);
     }
 
-    private void songDuration() {
+    private void determineMediaDuration() {
         MediaPlayer mediaPlayer = player.getPlayer();
-        mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) ->
-        {
-            Duration duration = mediaPlayer.getTotalDuration();
-            slider.setMax(duration.toSeconds());
-            slider.setValue(newTime.toSeconds());
-            songEnd.setText(createDurationString((int) duration.toSeconds()));
-            songDuration.setText(createDurationString((int) newTime.toSeconds()));
+        mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+            setTimeStamps(newTime);
             mediaPlayer.setOnEndOfMedia(() -> {
                 if (loopingCBox.isSelected())
-                    player.restartMedia();
+                    player.getPlayer().seek(player.getPlayer().getStartTime());
                 else
-                    skipOrBack(true);
+                    changeMedia(true);
             });
         });
+    }
+
+    private void setTimeStamps(Duration currentTime){
+        MediaPlayer mediaPlayer = player.getPlayer();
+        Duration duration = mediaPlayer.getTotalDuration();
+        slider.setMax(duration.toSeconds());
+        slider.setValue(currentTime.toSeconds());
+        songEnd.setText(createDurationString((int) duration.toSeconds()));
+        songDuration.setText(createDurationString((int) currentTime.toSeconds()));
     }
 
     private String createDurationString(int seconds) {
@@ -310,25 +314,28 @@ public class PlayerGUIController implements Initializable {
         return String.format("%02d:%02d:%02d", hours, mins, secs);
     }
 
-    private void skipOrBack(boolean skip){
-        if (randomizeCBox.isSelected())
-            skipOrBackShuffle(skip);
+    private void changeMedia(boolean skip){
+        if (shuffleCBox.isSelected())
+           tryToChangeShuffledMedia(skip);
         else
             setSelectedListViewIndex(selectedListViewIndex() + (skip ? 1 : -1));
         if (player.isPlaying())
             playNewMedia();
     }
 
-    private void skipOrBackShuffle(boolean skip) {
-        shuffledIndicesIndex += skip ? +1 : -1;
+    private void tryToChangeShuffledMedia(boolean skip){
         try {
-            int randomIndex = shuffledIndices.get(buttonPressed).get(shuffledIndicesIndex);
-            setSelectedListViewIndex(randomIndex);
-            if (player.isPlaying())
-                playNewMedia();
-        } catch (IndexOutOfBoundsException ex) {
-            shuffledIndicesIndex += !skip ? +1 : -1;
+            changeShuffledMedia(skip);
+        } catch (IndexOutOfBoundsException e){
+            shuffledIndicesIndex += -1;
         }
+    }
+
+    private void changeShuffledMedia(boolean skip) throws IndexOutOfBoundsException {
+        shuffledIndicesIndex += skip ? +1 : -1;
+        int indexSelectedInShuffleList = shuffledIndices.get(menuButtonPressed).get(shuffledIndicesIndex);
+        setSelectedListViewIndex(indexSelectedInShuffleList);
+
     }
 
     private void toggleFullscreen() {
@@ -342,15 +349,15 @@ public class PlayerGUIController implements Initializable {
         loopingCBox.setSelected(!prev);
     }
 
-    private void toggleRandomizing() {
-        boolean prev = randomizeCBox.isSelected();
+    private void toggleShuffle() {
+        boolean prev = shuffleCBox.isSelected();
         clearBoxes();
-        randomizeCBox.setSelected(!prev);
+        shuffleCBox.setSelected(!prev);
     }
 
     private void clearBoxes() {
         loopingCBox.setSelected(false);
-        randomizeCBox.setSelected(false);
+        shuffleCBox.setSelected(false);
     }
 
     private void openDirectoryChooser(int browseButtonPressed) {
@@ -358,15 +365,28 @@ public class PlayerGUIController implements Initializable {
             isChooserOpen = true;
             DirectoryChooser chooser = new DirectoryChooser();
             File dir = chooser.showDialog(new Stage());
-            if (dir != null) {
-                player.stopMedia();
-                File file = new File(saveFileNames[browseButtonPressed] + ".txt");
-                saveToFile(file, dir.getAbsolutePath());
-                setDefaults();
-            }
+            if (dir != null)
+               setNewDirectoryInSaveFile(dir, browseButtonPressed);
             isChooserOpen = false;
         }
     }
+
+    private void setNewDirectoryInSaveFile(File dir, int browseButtonPressed) {
+        if (player.getPlayer() != null)
+            player.getPlayer().stop();
+        File file = new File(saveFileNames[browseButtonPressed] + ".txt");
+        saveToFile(file, dir.getAbsolutePath());
+        tryToSetRootFields();
+    }
+
+    private void saveToFile(File file, String text) {
+        try {
+            Files.write(file.toPath(), text.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private int selectedListViewIndex() {
         return listView.getSelectionModel().getSelectedIndex();
@@ -377,11 +397,11 @@ public class PlayerGUIController implements Initializable {
     }
 
     private boolean isSelectedFile() {
-        return player.getFiles()[buttonPressed][selectedListViewIndex()].isFile();
+        return player.getFiles()[menuButtonPressed][selectedListViewIndex()].isFile();
     }
 
     private boolean isSelectedDirectory() {
-        return player.getFiles()[buttonPressed][selectedListViewIndex()].isDirectory();
+        return player.getFiles()[menuButtonPressed][selectedListViewIndex()].isDirectory();
     }
 }
 
