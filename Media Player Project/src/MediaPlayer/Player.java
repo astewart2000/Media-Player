@@ -41,6 +41,7 @@ public class Player {
     public void openDirectory(int buttonPressed, boolean addingDir) {
         try {
             if (addingDir) {
+<<<<<<< HEAD
                 if (directoryIndex[buttonPressed] >= addedDirectories.get(buttonPressed).size())
                     addedDirectories.get(buttonPressed).add(currentDirectories[buttonPressed]);
                 else
@@ -48,6 +49,15 @@ public class Player {
             }
             currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex[buttonPressed]);
             directoryIndex[buttonPressed]++;
+=======
+                if (directoryIndex >= addedDirectories.get(buttonPressed).size())
+                    addedDirectories.get(buttonPressed).add(currentDirectories[buttonPressed]);
+                else
+                    addedDirectories.get(buttonPressed).set(directoryIndex, currentDirectories[buttonPressed]);
+            }
+            currentDirectories[buttonPressed] = addedDirectories.get(buttonPressed).get(directoryIndex);
+            directoryIndex++;
+>>>>>>> 44d4ef2c14cebf988a523a342930e8bab8076f37
         } catch (IndexOutOfBoundsException ex){
             displayMessage("Directory does not exist!");
         }
@@ -55,7 +65,11 @@ public class Player {
 
     public void closeDirectory(int buttonPressed) {
         String prev = currentDirectories[buttonPressed].toString();
+<<<<<<< HEAD
         if (directoryIndex[buttonPressed] != 0) {
+=======
+        if (directoryIndex != 0) {
+>>>>>>> 44d4ef2c14cebf988a523a342930e8bab8076f37
             currentDirectories[buttonPressed] = new File(prev.substring(0, prev.lastIndexOf(File.separator))).toPath();
             directoryIndex[buttonPressed]--;
         } else
