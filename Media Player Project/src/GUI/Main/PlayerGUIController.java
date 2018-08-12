@@ -169,11 +169,7 @@ public class PlayerGUIController implements Initializable {
                 toggleFullscreen();
                 break;
             case "randomize":
-<<<<<<< HEAD
                 toggleShuffle();
-=======
-                toggleRandomizing();
->>>>>>> 44d4ef2c14cebf988a523a342930e8bab8076f37
                 break;
             case "loop":
                 toggleLooping();
@@ -239,16 +235,10 @@ public class PlayerGUIController implements Initializable {
     }
 
     private void refreshShuffledIndices() {
-<<<<<<< HEAD
         shuffledIndices.get(buttonPressed).clear();
         int length = player.getFiles()[buttonPressed].length;
         int[] randomIndex = ThreadLocalRandom.current().ints(0, length).distinct().limit(length).toArray();
         shuffledIndices.get(buttonPressed).add(selectedListViewIndex());
-=======
-        int length = player.getFiles()[buttonPressed].length;
-        int[] randomIndex = ThreadLocalRandom.current().ints(0, length).distinct().limit(length).toArray();
-        shuffledIndices.get(buttonPressed).clear();
->>>>>>> 44d4ef2c14cebf988a523a342930e8bab8076f37
         for (int i = 0; i < length; i++)
             shuffledIndices.get(buttonPressed).add(randomIndex[i]);
         shuffledIndicesIndex = 0;
@@ -349,16 +339,10 @@ public class PlayerGUIController implements Initializable {
         loopingCBox.setSelected(!prev);
     }
 
-<<<<<<< HEAD
     private void toggleShuffle() {
         boolean prev = randomizeCBox.isSelected();
         clearBoxes();
         refreshShuffledIndices();
-=======
-    private void toggleRandomizing() {
-        boolean prev = randomizeCBox.isSelected();
-        clearBoxes();
->>>>>>> 44d4ef2c14cebf988a523a342930e8bab8076f37
         randomizeCBox.setSelected(!prev);
     }
 
@@ -398,4 +382,3 @@ public class PlayerGUIController implements Initializable {
         return player.getFiles()[buttonPressed][selectedListViewIndex()].isDirectory();
     }
 }
-
