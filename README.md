@@ -1,6 +1,5 @@
 # Media Player
-Hello! I hope you enjoy my application.
-This was the first project I uploaded to github. A lot of my older projects are private but I kept this one up because for it was the first.
+Hello! I hope you enjoy my application. This was the first project I uploaded to github.
 
 ##  How to use
 1. Make sure to download java 8 at oracle.com which works for any operating system.
