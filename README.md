@@ -1,5 +1,5 @@
 # Media Player
-Hello! This is the first project I uploaded to github.
+A cross-platform audio/video player written in Java.
 
 ##  How to use
 1. Make sure to download java 8 at oracle.com which works for any operating system.
