@@ -1,5 +1,5 @@
 # Media Player
-A cross-platform audio/video player written in Java.
+A cross-platform audio/video player with a built-in file explorer created with Java.
 
 ##  How to use
 1. Make sure to download java 8 at oracle.com which works for any operating system.
